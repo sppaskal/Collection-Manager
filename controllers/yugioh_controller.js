@@ -1,4 +1,5 @@
 import { MongoClient } from 'mongodb'
+import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
 
 const renderTestMode = true
 
@@ -59,43 +60,28 @@ export async function getCardByNameOrId (req, res) {
     // Retrieve the associated image file from GridFS
     const imageFile = await imageFilesCollection.findOne({ _id: String(card.id) })
 
-    if (!imageFile) {
-      // If no image is found, return the card without an image
-      return res.json(card)
+    // If an image for the given card is found
+    if (imageFile) {
+      // Retrieve the image data from GridFS chunks
+      const downloadStream = imageChunksCollection.find({ files_id: imageFile._id }).sort({ n: 1 })
+
+      // Buffer to store the image data
+      const imageData = []
+      for await (const chunk of downloadStream) {
+        imageData.push(chunk.data.buffer)
+      }
+
+      // Combine the chunks into a single buffer
+      const imageBuffer = Buffer.concat(imageData)
+
+      // Attach the image as base64-encoded data
+      const imageBase64 = `data:${imageFile.contentType};base64,${imageBuffer.toString('base64')}`
+      card.image = imageBase64
     }
-
-    // Retrieve the image data from GridFS chunks
-    const downloadStream = imageChunksCollection.find({ files_id: imageFile._id }).sort({ n: 1 })
-
-    // Buffer to store the image data
-    const imageData = []
-    for await (const chunk of downloadStream) {
-      imageData.push(chunk.data.buffer)
-    }
-
-    // Combine the chunks into a single buffer
-    const imageBuffer = Buffer.concat(imageData)
-
-    // Attach the image as base64-encoded data
-    const imageBase64 = `data:${imageFile.contentType};base64,${imageBuffer.toString('base64')}`
-    card.image = imageBase64
 
     if (renderTestMode) {
-      // Render an HTML response to display the image
-      res.send(`
-            <html>
-            <body>
-                <h1>${card.name}</h1>
-                <h2>${card.type}</h2>
-                <h2>${card.race}</h2>
-                <h2>${card.ygoprodeck_url}</h2>
-                <h2>${card.desc}</h2>
-                <img src="${imageBase64}" alt="${card.name}" />
-            </body>
-            </html>
-        `)
+      res.send(renderYugiohCardToHtml(card))
     } else {
-      // Json response
       res.json(card)
     }
   } catch (err) {
