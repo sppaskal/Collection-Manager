@@ -1,8 +1,9 @@
 import express from 'express'
+import config from './config/config.js'
 import yugiohRoutes from './routes/yugioh_routes.js'
 
 const app = express()
-const port = 3000
+const port = config.port
 
 app.use('/', yugiohRoutes)
 

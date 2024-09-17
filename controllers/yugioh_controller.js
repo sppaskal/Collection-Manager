@@ -1,10 +1,11 @@
+import config from '../config/config.js'
 import { MongoClient } from 'mongodb'
 import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
 
 const renderTestMode = true
 
-const uri = 'mongodb://localhost:27017'
-const databaseName = 'collection_manager_db'
+const uri = config.db_uri
+const databaseName = config.db_name
 const cardData = 'yugioh_cards'
 const cardImageMetadata = 'yugioh_card_images.files'
 const cardImageChunks = 'yugioh_card_images.chunks'
