@@ -7,15 +7,15 @@ dotenv.config()
 const config = {
   development: {
     port: process.env.DEV_PORT,
-    db_uri: process.env.DEV_DB_URI,
-    db_name: process.env.DEV_DB_NAME,
-    render_test_mode: true
+    dbUri: process.env.DEV_DB_URI,
+    dbName: process.env.DEV_DB_NAME,
+    renderTestMode: true
   },
   production: {
     port: process.env.PROD_PORT,
-    db_uri: process.env.PROD_DB_URI,
-    db_name: process.env.PROD_DB_NAME,
-    render_test_mode: false
+    dbUri: process.env.PROD_DB_URI,
+    dbName: process.env.PROD_DB_NAME,
+    renderTestMode: false
   }
 }
 

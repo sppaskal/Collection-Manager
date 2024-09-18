@@ -1,16 +1,15 @@
 import config from '../config/config.js'
 import { MongoClient } from 'mongodb'
 import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
+import { caseInsensitive } from '../helpers/query_helper.js'
 
-const renderTestMode = true
-
-const uri = config.db_uri
-const databaseName = config.db_name
+const uri = config.dbUri
+const databaseName = config.dbName
 const cardData = 'yugioh_cards'
 const cardImageMetadata = 'yugioh_card_images.files'
 const cardImageChunks = 'yugioh_card_images.chunks'
 
-// Get all cards
+/** Get all cards */
 export async function getCards (req, res) {
   const client = new MongoClient(uri)
 
@@ -30,8 +29,9 @@ export async function getCards (req, res) {
   }
 }
 
-// Get a card by either 'name' or 'id' and include image data
-export async function getCardByNameOrId (req, res) {
+/** Get a card by either 'name', 'id', or 'set-code'
+ * and include image data */
+export async function getCard (req, res) {
   const client = new MongoClient(uri)
 
   try {
@@ -41,15 +41,17 @@ export async function getCardByNameOrId (req, res) {
     const imageFilesCollection = db.collection(cardImageMetadata)
     const imageChunksCollection = db.collection(cardImageChunks)
 
-    const { name, id } = req.params
+    const { name, id, setCode } = req.params
 
     let query = {}
 
-    // Query card by either name (case insensitive) or id
+    // Query card by either name (case insensitive) or id or set
     if (name) {
-      query = { name: { $regex: new RegExp(`^${name}$`, 'i') } }
+      query = caseInsensitive('name', name)
     } else if (id) {
       query = { id: Number(id) }
+    } else if (setCode) {
+      query = caseInsensitive('card_sets.set_code', setCode)
     }
 
     const card = await cardCollection.findOne(query)
@@ -80,7 +82,7 @@ export async function getCardByNameOrId (req, res) {
       card.image = imageBase64
     }
 
-    if (renderTestMode) {
+    if (config.renderTestMode) {
       res.send(renderYugiohCardToHtml(card))
     } else {
       res.json(card)
