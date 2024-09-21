@@ -143,3 +143,46 @@ export async function getCard (req, res) {
     await client.close()
   }
 }
+
+// -------------------------------------------------------------
+
+/** Get card image by id */
+export async function getCardImage (req, res) {
+  const client = new MongoClient(uri)
+
+  try {
+    await client.connect()
+    const db = client.db(databaseName)
+    const imageFilesCollection = db.collection(cardImageMetadata)
+    const imageChunksCollection = db.collection(cardImageChunks)
+
+    const { id } = req.params
+
+    // Retrieve the associated image file from GridFS1
+    const imageFile = await imageFilesCollection.findOne({ _id: String(id) })
+
+    // If an image for the given card is found
+    if (imageFile) {
+      // Retrieve the image data from GridFS chunks
+      const downloadStream = imageChunksCollection.find({ files_id: imageFile._id }).sort({ n: 1 })
+
+      // Buffer to store the image data
+      const imageData = []
+      for await (const chunk of downloadStream) {
+        imageData.push(chunk.data.buffer)
+      }
+
+      // Combine the chunks into a single buffer
+      const imageBuffer = Buffer.concat(imageData)
+
+      return res.json(`data:${imageFile.contentType};base64,${imageBuffer.toString('base64')}`)
+    }
+
+    return res.json({ error: 'Card image not found' })
+  } catch (err) {
+    console.error('Error fetching card image:', err)
+    res.status(500).json({ error: 'Failed to fetch card image' })
+  } finally {
+    await client.close()
+  }
+}
