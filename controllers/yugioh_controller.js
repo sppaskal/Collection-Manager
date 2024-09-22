@@ -1,16 +1,15 @@
 import config from '../config/config.js'
 import { MongoClient } from 'mongodb'
-import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
 import {
-  caseInsensFullMatch,
-  caseInsensPartMatch
-} from '../helpers/query_helper.js'
+  fetchCards,
+  fetchCardsBySet,
+  fetchCard,
+  fetchCardImageById
+} from '../services/yugioh_services.js'
+import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
 
 const uri = config.dbUri
 const databaseName = config.dbName
-const cardData = 'yugioh_cards'
-const cardImageMetadata = 'yugioh_card_images.files'
-const cardImageChunks = 'yugioh_card_images.chunks'
 
 // -------------------------------------------------------------
 
@@ -21,10 +20,9 @@ export async function getCards (req, res) {
   try {
     await client.connect()
     const db = client.db(databaseName)
-    const collection = db.collection(cardData)
 
     // Fetch all cards
-    const cards = await collection.find({}).toArray()
+    const cards = await fetchCards(db)
 
     res.json(cards)
   } catch (err) {
@@ -44,21 +42,11 @@ export async function getCardsBySet (req, res) {
   try {
     await client.connect()
     const db = client.db(databaseName)
-    const collection = db.collection(cardData)
 
     const { setName } = req.params
 
-    // Query to find documents where set_name is an exact match
-    // or set_code contains the provided string (case insensitive)
-    const query = {
-      $or: [
-        caseInsensFullMatch('card_sets.set_name', setName),
-        caseInsensPartMatch('card_sets.set_code', setName)
-      ]
-    }
-
-    // Fetch all matching cards
-    const cards = await collection.find(query).toArray()
+    // Call service layer to fetch the cards
+    const cards = await fetchCardsBySet(db, setName)
 
     // If no cards are found, return a 404 status
     if (cards.length === 0) {
@@ -79,55 +67,27 @@ export async function getCardsBySet (req, res) {
 // -------------------------------------------------------------
 
 /** Get a card by either 'name', 'id', or 'set-code'
- * and include image data */
+ * and include image data if available */
 export async function getCard (req, res) {
   const client = new MongoClient(uri)
 
   try {
     await client.connect()
     const db = client.db(databaseName)
-    const cardCollection = db.collection(cardData)
-    const imageFilesCollection = db.collection(cardImageMetadata)
-    const imageChunksCollection = db.collection(cardImageChunks)
 
     const { name, id, setCode } = req.params
 
-    let query = {}
-
-    // Query card by either name (case insensitive) or id or set
-    if (name) {
-      query = caseInsensFullMatch('name', name)
-    } else if (id) {
-      query = { id: Number(id) }
-    } else if (setCode) {
-      query = caseInsensFullMatch('card_sets.set_code', setCode)
-    }
-
-    const card = await cardCollection.findOne(query)
+    // Call service layer to fetch card data
+    const card = await fetchCard(db, name, id, setCode)
 
     if (!card) {
       return res.status(404).json({ error: 'Card not found' })
     }
 
-    // Retrieve the associated image file from GridFS
-    const imageFile = await imageFilesCollection.findOne({ _id: String(card.id) })
+    // Call service layer to fetch card image
+    const imageBase64 = await fetchCardImageById(db, card.id)
 
-    // If an image for the given card is found
-    if (imageFile) {
-      // Retrieve the image data from GridFS chunks
-      const downloadStream = imageChunksCollection.find({ files_id: imageFile._id }).sort({ n: 1 })
-
-      // Buffer to store the image data
-      const imageData = []
-      for await (const chunk of downloadStream) {
-        imageData.push(chunk.data.buffer)
-      }
-
-      // Combine the chunks into a single buffer
-      const imageBuffer = Buffer.concat(imageData)
-
-      // Attach the image as base64-encoded data
-      const imageBase64 = `data:${imageFile.contentType};base64,${imageBuffer.toString('base64')}`
+    if (imageBase64) {
       card.image = imageBase64
     }
 
@@ -151,38 +111,20 @@ export async function getCardImage (req, res) {
   const client = new MongoClient(uri)
 
   try {
-    await client.connect()
     const db = client.db(databaseName)
-    const imageFilesCollection = db.collection(cardImageMetadata)
-    const imageChunksCollection = db.collection(cardImageChunks)
 
     const { id } = req.params
 
-    // Retrieve the associated image file from GridFS1
-    const imageFile = await imageFilesCollection.findOne({ _id: String(id) })
+    // Call service layer to fetch card image
+    const imageBase64 = await fetchCardImageById(db, id)
 
-    // If an image for the given card is found
-    if (imageFile) {
-      // Retrieve the image data from GridFS chunks
-      const downloadStream = imageChunksCollection.find({ files_id: imageFile._id }).sort({ n: 1 })
-
-      // Buffer to store the image data
-      const imageData = []
-      for await (const chunk of downloadStream) {
-        imageData.push(chunk.data.buffer)
-      }
-
-      // Combine the chunks into a single buffer
-      const imageBuffer = Buffer.concat(imageData)
-
-      return res.json(`data:${imageFile.contentType};base64,${imageBuffer.toString('base64')}`)
+    if (!imageBase64) {
+      return res.status(404).json({ error: 'Card image not found' })
     }
 
-    return res.json({ error: 'Card image not found' })
+    return res.json(imageBase64)
   } catch (err) {
     console.error('Error fetching card image:', err)
-    res.status(500).json({ error: 'Failed to fetch card image' })
-  } finally {
-    await client.close()
+    return res.status(500).json({ error: 'Failed to fetch card image' })
   }
 }
