@@ -9,13 +9,15 @@ const config = {
     port: process.env.DEV_PORT,
     dbUri: process.env.DEV_DB_URI,
     dbName: process.env.DEV_DB_NAME,
-    renderTestMode: true
+    renderTestMode: true,
+    loggingLevel: 'debug'
   },
   production: {
     port: process.env.PROD_PORT,
     dbUri: process.env.PROD_DB_URI,
     dbName: process.env.PROD_DB_NAME,
-    renderTestMode: false
+    renderTestMode: false,
+    loggingLevel: 'info'
   }
 }
 

@@ -1,7 +1,7 @@
 import {
   caseInsensFullMatch,
   caseInsensPartMatch
-} from '../helpers/query_helper.js'
+} from '../utils/query_helper.js'
 
 const cardData = 'yugioh_cards'
 const cardImageMetadata = 'yugioh_card_images.files'

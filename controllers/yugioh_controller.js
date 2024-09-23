@@ -1,12 +1,13 @@
-import config from '../config/config.js'
 import { MongoClient } from 'mongodb'
+import config from '../config/config.js'
+import logger from '../utils/logger.js'
 import {
   fetchCards,
   fetchCardsBySet,
   fetchCard,
   fetchCardImageById
 } from '../services/yugioh_services.js'
-import { renderYugiohCardToHtml } from '../helpers/html_renderer.js'
+import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 
 const uri = config.dbUri
 const databaseName = config.dbName
@@ -26,8 +27,7 @@ export async function getCards (req, res) {
 
     res.json(cards)
   } catch (err) {
-    // TODO: Add logging
-    console.error('Error fetching data:', err)
+    logger.error('Error fetching cards:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
   } finally {
     await client.close()
@@ -49,7 +49,6 @@ export async function getCardsBySet (req, res) {
     // Call service layer to fetch cards
     const cards = await fetchCardsBySet(db, setName)
 
-    // If no cards are found, return a 404 status
     if (cards.length === 0) {
       return res.status(404).json(
         { error: 'No cards found for the specified set' }
@@ -58,8 +57,7 @@ export async function getCardsBySet (req, res) {
 
     res.json(cards)
   } catch (err) {
-    // TODO: Add logging
-    console.error('Error fetching cards:', err)
+    logger.error('Error fetching cards:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
   } finally {
     await client.close()
@@ -99,8 +97,7 @@ export async function getCard (req, res) {
       res.json(card)
     }
   } catch (err) {
-    // TODO: Add logging
-    console.error('Error fetching card:', err)
+    logger.error('Error fetching card:', err)
     res.status(500).json({ error: 'Failed to fetch card' })
   } finally {
     await client.close()
@@ -127,8 +124,7 @@ export async function getCardImage (req, res) {
 
     return res.json(imageBase64)
   } catch (err) {
-    // TODO: Add logging
-    console.error('Error fetching card image:', err)
+    logger.error('Error fetching card image:', err)
     return res.status(500).json({ error: 'Failed to fetch card image' })
   }
 }
