@@ -21,11 +21,12 @@ export async function getCards (req, res) {
     await client.connect()
     const db = client.db(databaseName)
 
-    // Fetch all cards
+    // Call service layer to fetch all cards
     const cards = await fetchCards(db)
 
     res.json(cards)
   } catch (err) {
+    // TODO: Add logging
     console.error('Error fetching data:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
   } finally {
@@ -45,7 +46,7 @@ export async function getCardsBySet (req, res) {
 
     const { setName } = req.params
 
-    // Call service layer to fetch the cards
+    // Call service layer to fetch cards
     const cards = await fetchCardsBySet(db, setName)
 
     // If no cards are found, return a 404 status
@@ -57,6 +58,7 @@ export async function getCardsBySet (req, res) {
 
     res.json(cards)
   } catch (err) {
+    // TODO: Add logging
     console.error('Error fetching cards:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
   } finally {
@@ -97,6 +99,7 @@ export async function getCard (req, res) {
       res.json(card)
     }
   } catch (err) {
+    // TODO: Add logging
     console.error('Error fetching card:', err)
     res.status(500).json({ error: 'Failed to fetch card' })
   } finally {
@@ -124,6 +127,7 @@ export async function getCardImage (req, res) {
 
     return res.json(imageBase64)
   } catch (err) {
+    // TODO: Add logging
     console.error('Error fetching card image:', err)
     return res.status(500).json({ error: 'Failed to fetch card image' })
   }
