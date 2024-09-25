@@ -10,7 +10,7 @@ const port = config.port
 // Use Morgan to log HTTP requests
 app.use(morgan('combined', {
   stream: {
-    // Pipe logs into winston
+    // Pipe logs into Winston
     write: (message) => logger.info(message.trim())
   }
 }))
