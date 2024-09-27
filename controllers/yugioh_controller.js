@@ -1,4 +1,4 @@
-import { MongoClient } from 'mongodb'
+import { connectToDatabase } from '../utils/db_helper.js'
 import config from '../config/config.js'
 import logger from '../utils/logger.js'
 import {
@@ -9,28 +9,20 @@ import {
 } from '../services/yugioh_services.js'
 import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 
-const uri = config.dbUri
-const databaseName = config.dbName
-
 // -------------------------------------------------------------
 
 /** Get all cards */
 export async function getCards (req, res) {
-  const client = new MongoClient(uri)
-
   try {
-    await client.connect()
-    const db = client.db(databaseName)
+    await connectToDatabase()
 
     // Call service layer to fetch all cards
-    const cards = await fetchCards(db)
+    const cards = await fetchCards()
 
     res.json(cards)
   } catch (err) {
     logger.error('Error fetching cards:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
-  } finally {
-    await client.close()
   }
 }
 
@@ -38,16 +30,13 @@ export async function getCards (req, res) {
 
 /** Get all cards for a specific set */
 export async function getCardsBySet (req, res) {
-  const client = new MongoClient(uri)
-
   try {
-    await client.connect()
-    const db = client.db(databaseName)
+    await connectToDatabase()
 
     const { setName } = req.params
 
     // Call service layer to fetch cards
-    const cards = await fetchCardsBySet(db, setName)
+    const cards = await fetchCardsBySet(setName)
 
     if (cards.length === 0) {
       return res.status(404).json(
@@ -59,8 +48,6 @@ export async function getCardsBySet (req, res) {
   } catch (err) {
     logger.error('Error fetching cards:', err)
     res.status(500).json({ error: 'Failed to fetch cards' })
-  } finally {
-    await client.close()
   }
 }
 
@@ -69,23 +56,20 @@ export async function getCardsBySet (req, res) {
 /** Get a card by either 'name', 'id', or 'set-code'
  * and include image data if available */
 export async function getCard (req, res) {
-  const client = new MongoClient(uri)
-
   try {
-    await client.connect()
-    const db = client.db(databaseName)
+    await connectToDatabase()
 
     const { name, id, setCode } = req.params
 
     // Call service layer to fetch card data
-    const card = await fetchCard(db, name, id, setCode)
+    const card = await fetchCard(name, id, setCode)
 
     if (!card) {
       return res.status(404).json({ error: 'Card not found' })
     }
 
     // Call service layer to fetch card image
-    const imageBase64 = await fetchCardImageById(db, card.id)
+    const imageBase64 = await fetchCardImageById(card.id)
 
     if (imageBase64) {
       card.image = imageBase64
@@ -99,8 +83,6 @@ export async function getCard (req, res) {
   } catch (err) {
     logger.error('Error fetching card:', err)
     res.status(500).json({ error: 'Failed to fetch card' })
-  } finally {
-    await client.close()
   }
 }
 
@@ -108,15 +90,13 @@ export async function getCard (req, res) {
 
 /** Get card image by id */
 export async function getCardImage (req, res) {
-  const client = new MongoClient(uri)
-
   try {
-    const db = client.db(databaseName)
+    await connectToDatabase()
 
     const { id } = req.params
 
     // Call service layer to fetch card image
-    const imageBase64 = await fetchCardImageById(db, id)
+    const imageBase64 = await fetchCardImageById(id)
 
     if (!imageBase64) {
       return res.status(404).json({ error: 'Card image not found' })

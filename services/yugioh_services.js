@@ -1,25 +1,25 @@
+import mongoose from 'mongoose'
+import yugiohCard from '../models/yugioh/card.js'
 import {
   caseInsensFullMatch,
   caseInsensPartMatch
 } from '../utils/query_helper.js'
 
-const cardData = 'yugioh_cards'
 const cardImageMetadata = 'yugioh_card_images.files'
 const cardImageChunks = 'yugioh_card_images.chunks'
 
 // -------------------------------------------------------------
 
 /** Fetch all cards */
-export async function fetchCards (db) {
-  const collection = db.collection(cardData)
-  return collection.find({}).toArray()
+export async function fetchCards () {
+  return await yugiohCard.find()
 }
 
 // -------------------------------------------------------------
 
 /** Fetch cards by set */
-export async function fetchCardsBySet (db, setName) {
-  const collection = db.collection(cardData)
+export async function fetchCardsBySet (setName) {
+  // const collection = db.collection(cardData)
 
   // Query to find documents where set_name is an exact match
   // or set_code contains the provided string (case insensitive)
@@ -31,15 +31,14 @@ export async function fetchCardsBySet (db, setName) {
   }
 
   // Fetch all matching cards
-  return await collection.find(query).toArray()
+  // return await collection.find(query).toArray()
+  return await yugiohCard.find(query)
 }
 
 // -------------------------------------------------------------
 
 /** Fetch card by name, id, or set code */
-export async function fetchCard (db, name, id, setCode) {
-  const cardCollection = db.collection(cardData)
-
+export async function fetchCard (name, id, setCode) {
   let query = {}
 
   if (name) {
@@ -50,13 +49,14 @@ export async function fetchCard (db, name, id, setCode) {
     query = caseInsensFullMatch('card_sets.set_code', setCode)
   }
 
-  return await cardCollection.findOne(query)
+  return await yugiohCard.findOne(query).lean()
 }
 
 // -------------------------------------------------------------
 
 /** Fetch card image by id from GridFS */
-export async function fetchCardImageById (db, id) {
+export async function fetchCardImageById (id) {
+  const db = mongoose.connection.db
   const imageFilesCollection = db.collection(cardImageMetadata)
   const imageChunksCollection = db.collection(cardImageChunks)
 

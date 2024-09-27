@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const cardSetSchema = new mongoose.Schema({
+const cardSet = new mongoose.Schema({
   set_name: String,
   set_code: String,
   set_rarity: String,
@@ -8,4 +8,4 @@ const cardSetSchema = new mongoose.Schema({
   set_price: String
 })
 
-export default mongoose.model('card_set', cardSetSchema)
+export default mongoose.model('card_set', cardSet)

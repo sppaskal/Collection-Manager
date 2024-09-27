@@ -1,8 +1,8 @@
 import mongoose from 'mongoose'
-import CardSet from './card_set.js'
-import CardPrice from './card_price.js'
+import cardSet from './card_set.js'
+import cardPrice from './card_price.js'
 
-const yugiohCardSchema = new mongoose.Schema({
+const yugiohCard = new mongoose.Schema({
   id: Number,
   name: String,
   typeline: [String],
@@ -17,8 +17,8 @@ const yugiohCardSchema = new mongoose.Schema({
   attribute: String,
   archetype: String,
   ygoprodeck_url: String,
-  card_sets: [CardSet.schema],
-  card_prices: [CardPrice.schema]
+  card_sets: [cardSet.schema],
+  card_prices: [cardPrice.schema]
 })
 
-export default mongoose.model('yugioh_card', yugiohCardSchema)
+export default mongoose.model('yugioh_card', yugiohCard)

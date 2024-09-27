@@ -21,6 +21,11 @@ const config = {
   }
 }
 
+config.development.dbFullUri = `${config.development.dbUri}/` +
+                                `${config.development.dbName}`
+config.production.dbFullUri = `${config.production.dbUri}/` +
+                               `${config.production.dbName}`
+
 const env = process.env.NODE_ENV || 'development'
 
 export default config[env]
