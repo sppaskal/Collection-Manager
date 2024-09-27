@@ -19,8 +19,6 @@ export async function fetchCards () {
 
 /** Fetch cards by set */
 export async function fetchCardsBySet (setName) {
-  // const collection = db.collection(cardData)
-
   // Query to find documents where set_name is an exact match
   // or set_code contains the provided string (case insensitive)
   const query = {

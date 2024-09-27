@@ -1,4 +1,3 @@
-import { connectToDatabase } from '../utils/db_helper.js'
 import config from '../config/config.js'
 import logger from '../utils/logger.js'
 import {
@@ -14,8 +13,6 @@ import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 /** Get all cards */
 export async function getCards (req, res) {
   try {
-    await connectToDatabase()
-
     // Call service layer to fetch all cards
     const cards = await fetchCards()
 
@@ -31,8 +28,6 @@ export async function getCards (req, res) {
 /** Get all cards for a specific set */
 export async function getCardsBySet (req, res) {
   try {
-    await connectToDatabase()
-
     const { setName } = req.params
 
     // Call service layer to fetch cards
@@ -57,8 +52,6 @@ export async function getCardsBySet (req, res) {
  * and include image data if available */
 export async function getCard (req, res) {
   try {
-    await connectToDatabase()
-
     const { name, id, setCode } = req.params
 
     // Call service layer to fetch card data
@@ -91,8 +84,6 @@ export async function getCard (req, res) {
 /** Get card image by id */
 export async function getCardImage (req, res) {
   try {
-    await connectToDatabase()
-
     const { id } = req.params
 
     // Call service layer to fetch card image
