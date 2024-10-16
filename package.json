@@ -28,7 +28,14 @@
     "winston": "^3.14.2"
   },
   "devDependencies": {
+    "@types/chai": "^5.0.0",
+    "@types/node": "^22.7.5",
+    "@types/sinon": "^17.0.3",
+    "chai": "^5.1.1",
+    "mocha": "^10.7.3",
+    "mongodb-memory-server": "^10.0.1",
     "nodemon": "^3.1.4",
+    "sinon": "^19.0.2",
     "standard": "^17.1.0"
   }
 }
