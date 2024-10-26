@@ -10,7 +10,7 @@ import yugiohCard from '../../models/yugioh/card.js'
 
 /* eslint-env mocha */
 
-describe('Service Layer Tests', () => {
+describe('Yugioh Service Layer Tests', () => {
   let mongoServer
   let sandbox
 
