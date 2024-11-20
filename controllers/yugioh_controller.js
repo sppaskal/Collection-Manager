@@ -4,7 +4,7 @@ import {
   fetchCards,
   fetchCardsBySet,
   fetchCard,
-  fetchCardImageById
+  fetchCardImagesByIds
 } from '../services/yugioh_services.js'
 import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 
@@ -62,7 +62,8 @@ export async function getCard (req, res) {
     }
 
     // Call service layer to fetch card image
-    const imageBase64 = await fetchCardImageById(card.id)
+    const imgObj = await fetchCardImagesByIds(card.id)
+    const imageBase64 = imgObj[card.id]
 
     if (imageBase64) {
       card.image = imageBase64
@@ -82,15 +83,18 @@ export async function getCard (req, res) {
 // -------------------------------------------------------------
 
 /** Get card image by id */
-export async function getCardImage (req, res) {
+export async function getCardImages (req, res) {
   try {
-    const { id } = req.params
+    // Normalize req.params.id to always be an array
+    const ids = req.params.ids.includes(',')
+      ? req.params.ids.split(',')
+      : [req.params.ids]
 
     // Call service layer to fetch card image
-    const imageBase64 = await fetchCardImageById(id)
+    const imageBase64 = await fetchCardImagesByIds(ids)
 
     if (!imageBase64) {
-      return res.status(404).json({ error: 'Card image not found' })
+      return res.status(404).json({ error: 'Card images not found' })
     }
 
     return res.json(imageBase64)

@@ -207,10 +207,10 @@ describe('Yugioh Service Layer Tests', () => {
       })
 
       // Call the service function and assert
-      const result = await service.fetchCardImageById(imageId)
+      const result = await service.fetchCardImagesByIds(imageId)
       const expectedBase64 = 'data:image/png;base64,aaZttg=='
 
-      expect(result).to.equal(expectedBase64)
+      expect(result[imageId]).to.equal(expectedBase64)
 
       sinon.assert.calledOnce(mockFilesCollection.findOne)
       sinon.assert.calledOnce(mockChunksCollection.find)

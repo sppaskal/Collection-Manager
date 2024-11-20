@@ -29,7 +29,6 @@ export async function fetchCardsBySet (setName) {
   }
 
   // Fetch all matching cards
-  // return await collection.find(query).toArray()
   return await yugiohCard.find(query)
 }
 
@@ -52,34 +51,42 @@ export async function fetchCard (name, id, setCode) {
 
 // -------------------------------------------------------------
 
-/** Fetch card image by id from GridFS */
-export async function fetchCardImageById (id) {
+/** Fetch card images by ids from GridFS */
+export async function fetchCardImagesByIds (ids) {
   const db = mongoose.connection.db
   const imageFilesCollection = db.collection(cardImageMetadata)
   const imageChunksCollection = db.collection(cardImageChunks)
 
-  const imageFile = await imageFilesCollection.findOne(
-    { _id: String(id) }
-  )
+  // Ensure ids is always an array
+  ids = Array.isArray(ids) ? ids : [ids]
 
-  if (!imageFile) {
-    return null
+  const imagesObj = {}
+
+  for (const id of ids) {
+    let imageData = 'N/A' // Assign if image file not found
+    const imageFile = await imageFilesCollection.findOne({ _id: String(id) })
+
+    if (imageFile) {
+      // Retrieve image data from GridFS chunks
+      const downloadStream = imageChunksCollection.find(
+        { files_id: imageFile._id }
+      ).sort({ n: 1 })
+
+      // Buffer to store image data
+      const chunks = []
+      for await (const chunk of downloadStream) {
+        chunks.push(chunk.data.buffer)
+      }
+
+      // Combine chunks into a single buffer
+      const imageBuffer = Buffer.concat(chunks)
+      // Store base64-encoded image
+      imageData = `data:${imageFile.contentType};base64,` +
+      `${imageBuffer.toString('base64')}`
+    }
+
+    imagesObj[id] = imageData
   }
 
-  // Retrieve the image data from GridFS chunks
-  const downloadStream = imageChunksCollection.find(
-    { files_id: imageFile._id }).sort({ n: 1 }
-  )
-
-  // Buffer to store the image data
-  const imageData = []
-  for await (const chunk of downloadStream) {
-    imageData.push(chunk.data.buffer)
-  }
-
-  // Combine the chunks into a single buffer
-  const imageBuffer = Buffer.concat(imageData)
-
-  return `data:${imageFile.contentType};base64,` +
-  `${imageBuffer.toString('base64')}`
+  return imagesObj
 }

@@ -114,7 +114,7 @@ describe('Yugioh Routes Integration Tests', () => {
   it('should fetch a single Yugioh card by name', async () => {
     const cardName = 'Obelisk the Tormentor'
     const res = await request.execute(app).get(`/yugioh_cards/name/${cardName}`)
-    console.log(res.error)
+
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
     expect(res.body.name).to.deep.equal(expectedData.card_by_name)
@@ -123,7 +123,7 @@ describe('Yugioh Routes Integration Tests', () => {
   it('should fetch a single Yugioh card by id', async () => {
     const cardId = 10000000
     const res = await request.execute(app).get(`/yugioh_cards/${cardId}`)
-    console.log(res.error)
+
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
     expect(res.body.name).to.deep.equal(expectedData.card_by_id)
@@ -132,7 +132,7 @@ describe('Yugioh Routes Integration Tests', () => {
   it('should fetch a single Yugioh card by set code', async () => {
     const setCode = 'CT13-EN002'
     const res = await request.execute(app).get(`/yugioh_cards/set-code/${setCode}`)
-    console.log(res.error)
+
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
     expect(res.body.name).to.deep.equal(expectedData.card_by_set_code)
@@ -140,10 +140,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a Yugioh card image by id', async () => {
     const cardId = 10000010
-    const res = await request.execute(app).get(`/yugioh_cards/image/${cardId}`)
+    const res = await request.execute(app).get(`/yugioh_cards/images/${cardId}`)
 
     expect(res).to.have.status(200)
-    expect(res.body).to.be.a('string')
-    expect(res.body).to.deep.equal(expectedData.image_by_id)
+    expect(res.body[cardId]).to.be.a('string')
+    expect(res.body[cardId]).to.deep.equal(expectedData.image_by_id)
   })
 })
