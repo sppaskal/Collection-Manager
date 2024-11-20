@@ -17,8 +17,8 @@ const yugiohCard = new mongoose.Schema({
   attribute: String,
   archetype: String,
   ygoprodeck_url: String,
-  card_sets: [cardSet.schema],
-  card_prices: [cardPrice.schema]
+  card_sets: [cardSet],
+  card_prices: [cardPrice]
 })
 
 export default mongoose.model('yugioh_card', yugiohCard)

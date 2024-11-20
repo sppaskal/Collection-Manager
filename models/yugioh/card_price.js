@@ -8,4 +8,4 @@ const cardPrice = new mongoose.Schema({
   coolstuffinc_price: String
 })
 
-export default mongoose.model('card_price', cardPrice)
+export default cardPrice

@@ -8,4 +8,4 @@ const cardSet = new mongoose.Schema({
   set_price: String
 })
 
-export default mongoose.model('card_set', cardSet)
+export default cardSet
