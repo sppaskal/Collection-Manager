@@ -1,14 +1,13 @@
 import mongoose from 'mongoose'
-import cardCopy from './card_copy.js'
+import CardCopy from './card_copy.js'
 
-const userCollection = new mongoose.Schema({
-  id: Number, // Id of ownership entry
+const UserCollection = new mongoose.Schema({
   card_id: Number, // References id in detailed tcg specific collection
-  user_id: Number, // The user that owns card(s)
+  user_id: String, // The user that owns card(s)
   tcg: String,
   name: String,
   quantity: Number,
-  copies: [cardCopy]
+  copies: [CardCopy]
 })
 
-export default mongoose.model('user_collection', userCollection)
+export default mongoose.model('user_collection', UserCollection)

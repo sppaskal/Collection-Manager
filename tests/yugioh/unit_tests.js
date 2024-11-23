@@ -4,7 +4,7 @@ import { expect } from 'chai'
 import sinon from 'sinon'
 
 import * as service from '../../services/yugioh_services.js'
-import yugiohCard from '../../models/yugioh/card.js'
+import YugiohCard from '../../models/yugioh/card.js'
 
 // To run: npx mocha tests/yugioh/unit_tests.js
 
@@ -45,8 +45,8 @@ describe('Yugioh Service Layer Tests', () => {
         { name: 'Dark Magician', atk: 2500, def: 2100 }
       ]
 
-      // Stub yugiohCard.find to return mock data
-      sandbox.stub(yugiohCard, 'find').returns(Promise.resolve(mockCards))
+      // Stub YugiohCard.find to return mock data
+      sandbox.stub(YugiohCard, 'find').returns(Promise.resolve(mockCards))
 
       const result = await service.fetchCards()
       expect(result).to.deep.equal(mockCards)
@@ -68,7 +68,7 @@ describe('Yugioh Service Layer Tests', () => {
 
     // Stub database behavior
     function stubSearchBySet () {
-      sandbox.stub(yugiohCard, 'find').callsFake((query) => {
+      sandbox.stub(YugiohCard, 'find').callsFake((query) => {
         const orConditions = query.$or || []
 
         // Check if each condition in the $or array
@@ -110,7 +110,7 @@ describe('Yugioh Service Layer Tests', () => {
     }
 
     it('should return a card by name', async () => {
-      sandbox.stub(yugiohCard, 'findOne').callsFake((query) => {
+      sandbox.stub(YugiohCard, 'findOne').callsFake((query) => {
         if (query.name.$regex.test(cardName)) {
           return { lean: () => Promise.resolve(mockCard) }
         } else {
@@ -123,7 +123,7 @@ describe('Yugioh Service Layer Tests', () => {
     })
 
     it('should return a card by id', async () => {
-      sandbox.stub(yugiohCard, 'findOne').callsFake((query) => {
+      sandbox.stub(YugiohCard, 'findOne').callsFake((query) => {
         if (query.id === cardId) {
           return { lean: () => Promise.resolve(mockCard) }
         } else {
@@ -136,7 +136,7 @@ describe('Yugioh Service Layer Tests', () => {
     })
 
     it('should return a card by set code', async () => {
-      sandbox.stub(yugiohCard, 'findOne').callsFake((query) => {
+      sandbox.stub(YugiohCard, 'findOne').callsFake((query) => {
         if (query['card_sets.set_code'].$regex.test(setCode)) {
           return { lean: () => Promise.resolve(mockCard) }
         } else {

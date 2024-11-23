@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const cardPrice = new mongoose.Schema({
+const CardPrice = new mongoose.Schema({
   cardmarket_price: String,
   tcgplayer_price: String,
   ebay_price: String,
@@ -8,4 +8,4 @@ const cardPrice = new mongoose.Schema({
   coolstuffinc_price: String
 })
 
-export default cardPrice
+export default CardPrice

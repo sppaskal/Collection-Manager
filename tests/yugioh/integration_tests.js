@@ -122,7 +122,7 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a single Yugioh card by id', async () => {
     const cardId = 10000000
-    const res = await request.execute(app).get(`/yugioh_cards/${cardId}`)
+    const res = await request.execute(app).get(`/yugioh_cards/id/${cardId}`)
 
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')

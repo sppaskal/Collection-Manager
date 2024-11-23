@@ -4,6 +4,7 @@ import morgan from 'morgan'
 import logger from './utils/logger.js'
 import { connectToDatabase } from './utils/db_helper.js'
 import yugiohRoutes from './routes/yugioh_routes.js'
+import userCollectionRoutes from './routes/collection_routes.js'
 
 const app = express()
 const port = config.port
@@ -15,8 +16,9 @@ app.use(morgan('combined', {
     write: (message) => logger.info(message.trim())
   }
 }))
-
+app.use(express.json()) // parse request body as JSON
 app.use('/', yugiohRoutes)
+app.use('/', userCollectionRoutes)
 
 await connectToDatabase()
 

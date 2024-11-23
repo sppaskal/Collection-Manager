@@ -1,6 +1,6 @@
 import mongoose from 'mongoose'
 
-const cardCopy = new mongoose.Schema({
+const CardCopy = new mongoose.Schema({
   set_code: String,
   condition: String,
   rarity: String,
@@ -8,4 +8,4 @@ const cardCopy = new mongoose.Schema({
   currency: String
 })
 
-export default cardCopy
+export default CardCopy
