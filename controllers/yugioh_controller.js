@@ -86,8 +86,9 @@ export async function getCard (req, res) {
 export async function getCardImages (req, res) {
   try {
     // Normalize req.params.id to always be an array
+    // Limit processing ids to first 10
     const ids = req.params.ids.includes(',')
-      ? req.params.ids.split(',')
+      ? req.params.ids.split(',').slice(0, 10)
       : [req.params.ids]
 
     // Call service layer to fetch card image
