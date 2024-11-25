@@ -26,11 +26,8 @@ export async function uploadCardCopies (data) {
     })
   }
 
-  // Save the document to the database
-  const savedEntry = await entry.save()
-
-  // Return the saved document as JSON
-  return savedEntry.toObject()
+  // Save and return as JSON
+  return (await entry.save()).toObject()
 }
 
 // -------------------------------------------------------------
