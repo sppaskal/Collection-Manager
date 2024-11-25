@@ -1,7 +1,9 @@
 import logger from '../utils/logger.js'
 import {
   uploadCardCopies
-} from '../services/controller_services.js'
+} from '../services/collection_services.js'
+
+// -------------------------------------------------------------
 
 /** Add copies of a card to user collection */
 export async function addCards (req, res) {
@@ -14,3 +16,5 @@ export async function addCards (req, res) {
     res.status(500).json({ error: 'Failed to add card copies' })
   }
 }
+
+// -------------------------------------------------------------

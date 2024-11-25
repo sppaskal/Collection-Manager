@@ -3,6 +3,7 @@ import config from './config/config.js'
 import morgan from 'morgan'
 import logger from './utils/logger.js'
 import { connectToDatabase } from './utils/db_helper.js'
+import userRoutes from './routes/user_routes.js'
 import yugiohRoutes from './routes/yugioh_routes.js'
 import userCollectionRoutes from './routes/collection_routes.js'
 
@@ -17,6 +18,7 @@ app.use(morgan('combined', {
   }
 }))
 app.use(express.json()) // parse request body as JSON
+app.use('/', userRoutes)
 app.use('/', yugiohRoutes)
 app.use('/', userCollectionRoutes)
 
