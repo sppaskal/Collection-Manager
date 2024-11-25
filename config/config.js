@@ -10,14 +10,18 @@ const config = {
     dbUri: process.env.DEV_DB_URI,
     dbName: process.env.DEV_DB_NAME,
     renderTestMode: false,
-    loggingLevel: 'debug'
+    loggingLevel: 'debug',
+    secretKey: process.env.DEV_SECRET_KEY,
+    jwtExpiry: '24h'
   },
   production: {
     port: process.env.PROD_PORT,
     dbUri: process.env.PROD_DB_URI,
     dbName: process.env.PROD_DB_NAME,
     renderTestMode: false,
-    loggingLevel: 'info'
+    loggingLevel: 'info',
+    secretKey: process.env.PROD_SECRET_KEY,
+    jwtExpiry: '2h'
   }
 }
 
