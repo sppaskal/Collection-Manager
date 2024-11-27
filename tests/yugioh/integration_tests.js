@@ -5,6 +5,8 @@ import * as chai from 'chai'
 import { MongoMemoryServer } from 'mongodb-memory-server'
 import mongoose from 'mongoose'
 import fs from 'fs/promises'
+import jwt from 'jsonwebtoken' // Import JWT for token generation
+import config from '../../config/config.js'
 import app from '../../app.js'
 
 // To run:  npx mocha tests/yugioh/integration_tests.js --exit
@@ -16,6 +18,7 @@ chai.use(chaiHttp)
 
 let mongoServer
 let expectedData
+let testToken
 
 describe('Yugioh Routes Integration Tests', () => {
   before(async () => {
@@ -30,6 +33,18 @@ describe('Yugioh Routes Integration Tests', () => {
 
     // Connect to the new in-memory database
     await mongoose.connect(uri, {})
+
+    // Insert a test user
+    const User = mongoose.model('user')
+    const testUser = new User({ username: 'testuser', password: 'password123' })
+    await testUser.save()
+
+    // Generate a JWT token for the test user
+    testToken = jwt.sign(
+      { id: testUser._id, username: testUser.username },
+      config.secretKey,
+      { expiresIn: '1h' }
+    )
 
     // Load mock data from JSON file
     const mockCardsData = await fs.readFile(
@@ -76,11 +91,13 @@ describe('Yugioh Routes Integration Tests', () => {
   })
 
   it('should fetch all Yugioh cards', async () => {
-    const res = await request.execute(app).get('/yugioh_cards')
+    const res = await request
+      .execute(app)
+      .get('/yugioh_cards')
+      .set('Authorization', `Bearer ${testToken}`)
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('array')
     expect(res.body).to.have.lengthOf(5)
-    // Assert that all name properties in res.body are in expectedData.all_cards
     const allNamesInExpectedData = res.body.every(card =>
       expectedData.all_cards.includes(card.name)
     )
@@ -89,7 +106,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch Yugioh cards by set name', async () => {
     const setName = 'Battles of Legend: Armageddon'
-    const res = await request.execute(app).get(`/yugioh_cards/set/${setName}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/set/${setName}`)
+      .set('Authorization', `Bearer ${testToken}`)
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('array')
     expect(res.body).to.have.lengthOf(1)
@@ -101,7 +121,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch Yugioh cards by set name (code)', async () => {
     const setName = 'BLAR'
-    const res = await request.execute(app).get(`/yugioh_cards/set/${setName}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/set/${setName}`)
+      .set('Authorization', `Bearer ${testToken}`)
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('array')
     expect(res.body).to.have.lengthOf(1)
@@ -113,7 +136,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a single Yugioh card by name', async () => {
     const cardName = 'Obelisk the Tormentor'
-    const res = await request.execute(app).get(`/yugioh_cards/name/${cardName}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/name/${cardName}`)
+      .set('Authorization', `Bearer ${testToken}`)
 
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
@@ -122,7 +148,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a single Yugioh card by id', async () => {
     const cardId = 10000000
-    const res = await request.execute(app).get(`/yugioh_cards/id/${cardId}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/id/${cardId}`)
+      .set('Authorization', `Bearer ${testToken}`)
 
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
@@ -131,7 +160,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a single Yugioh card by set code', async () => {
     const setCode = 'CT13-EN002'
-    const res = await request.execute(app).get(`/yugioh_cards/set-code/${setCode}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/set-code/${setCode}`)
+      .set('Authorization', `Bearer ${testToken}`)
 
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('object')
@@ -140,7 +172,10 @@ describe('Yugioh Routes Integration Tests', () => {
 
   it('should fetch a Yugioh card image by id', async () => {
     const cardId = 10000010
-    const res = await request.execute(app).get(`/yugioh_cards/images/${cardId}`)
+    const res = await request
+      .execute(app)
+      .get(`/yugioh_cards/images/${cardId}`)
+      .set('Authorization', `Bearer ${testToken}`)
 
     expect(res).to.have.status(200)
     expect(res.body[cardId]).to.be.a('string')

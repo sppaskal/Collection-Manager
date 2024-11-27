@@ -5,8 +5,12 @@ import {
   getCardsBySet,
   getCardImages
 } from '../controllers/yugioh_controller.js'
+import {
+  authenticate
+} from '../middlewares/auth_middleware.js'
 
 const router = express.Router()
+router.use(authenticate)
 
 router.get('/yugioh_cards', getCards)
 router.get('/yugioh_cards/set/:setName', getCardsBySet)

@@ -1,6 +1,6 @@
 import jwt from 'jsonwebtoken'
 import config from '../config/config.js'
-import User from '../models/authentication/user.js'
+import User from '../models/user/user.js'
 
 // -------------------------------------------------------------
 
