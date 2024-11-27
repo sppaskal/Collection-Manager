@@ -90,6 +90,8 @@ describe('Yugioh Routes Integration Tests', () => {
     await mongoServer.stop()
   })
 
+  // -------------------------------------------------------------
+
   it('should fetch all Yugioh cards', async () => {
     const res = await request
       .execute(app)
@@ -98,11 +100,14 @@ describe('Yugioh Routes Integration Tests', () => {
     expect(res).to.have.status(200)
     expect(res.body).to.be.an('array')
     expect(res.body).to.have.lengthOf(5)
+    // Assert that all name properties in res.body are in expectedData.all_cards
     const allNamesInExpectedData = res.body.every(card =>
       expectedData.all_cards.includes(card.name)
     )
     expect(allNamesInExpectedData).to.equal(true)
   })
+
+  // -------------------------------------------------------------
 
   it('should fetch Yugioh cards by set name', async () => {
     const setName = 'Battles of Legend: Armageddon'
@@ -133,6 +138,8 @@ describe('Yugioh Routes Integration Tests', () => {
     )
     expect(allNamesInExpectedData).to.equal(true)
   })
+
+  // -------------------------------------------------------------
 
   it('should fetch a single Yugioh card by name', async () => {
     const cardName = 'Obelisk the Tormentor'
@@ -169,6 +176,8 @@ describe('Yugioh Routes Integration Tests', () => {
     expect(res.body).to.be.an('object')
     expect(res.body.name).to.deep.equal(expectedData.card_by_set_code)
   })
+
+  // -------------------------------------------------------------
 
   it('should fetch a Yugioh card image by id', async () => {
     const cardId = 10000010
