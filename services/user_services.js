@@ -4,8 +4,14 @@ import User from '../models/user/user.js'
 
 // -------------------------------------------------------------
 
-export const userExists = async (username) => {
+export const getUserByUsername = async (username) => {
   return await User.findOne({ username })
+}
+
+// -------------------------------------------------------------
+
+export const getUserById = async (id) => {
+  return await User.findOne({ _id: id })
 }
 
 // -------------------------------------------------------------
@@ -13,6 +19,14 @@ export const userExists = async (username) => {
 export const registerUser = async (username, password) => {
   const newUser = new User({ username, password })
   return (await newUser.save()).toObject()
+}
+
+// -------------------------------------------------------------
+
+export const updateUser = async (user, data) => {
+  if (data.username) user.username = data.username
+  if (data.password) user.password = data.password
+  return await user.save()
 }
 
 // -------------------------------------------------------------
