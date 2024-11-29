@@ -1,3 +1,4 @@
+/* eslint-env mocha */
 /* eslint-disable import/no-named-default */
 import { default as chaiHttp, request } from 'chai-http'
 /* eslint-enable import/no-named-default */
@@ -10,8 +11,6 @@ import config from '../../config/config.js'
 import app from '../../app.js'
 
 // To run:  npx mocha tests/yugioh/integration_tests.js --exit
-
-/* eslint-env mocha */
 
 const { expect } = chai
 chai.use(chaiHttp)

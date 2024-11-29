@@ -13,9 +13,7 @@ import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 /** Get all cards */
 export async function getCards (req, res) {
   try {
-    // Call service layer to fetch all cards
     const cards = await fetchCards()
-
     res.json(cards)
   } catch (err) {
     logger.error('Error fetching cards:', err)
@@ -29,8 +27,6 @@ export async function getCards (req, res) {
 export async function getCardsBySet (req, res) {
   try {
     const { setName } = req.params
-
-    // Call service layer to fetch cards
     const cards = await fetchCardsBySet(setName)
 
     if (cards.length === 0) {
@@ -53,15 +49,12 @@ export async function getCardsBySet (req, res) {
 export async function getCard (req, res) {
   try {
     const { name, id, setCode } = req.params
-
-    // Call service layer to fetch card data
     const card = await fetchCard(name, id, setCode)
 
     if (!card) {
       return res.status(404).json({ error: 'Card not found' })
     }
 
-    // Call service layer to fetch card image
     const imgObj = await fetchCardImagesByIds(card.id)
     const imageBase64 = imgObj[card.id]
 
@@ -91,7 +84,6 @@ export async function getCardImages (req, res) {
       ? req.params.ids.split(',').slice(0, 10)
       : [req.params.ids]
 
-    // Call service layer to fetch card image
     const imageBase64 = await fetchCardImagesByIds(ids)
 
     if (!imageBase64) {

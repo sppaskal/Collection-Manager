@@ -8,7 +8,6 @@ import {
 /** Add copies of a card to user collection */
 export async function addCards (req, res) {
   try {
-    // Call service layer to upload copies of card
     const cardUpload = await uploadCardCopies(req.body)
     res.status(201).json(cardUpload)
   } catch (err) {
