@@ -4,26 +4,26 @@ import User from '../models/user/user.js'
 
 // -------------------------------------------------------------
 
-export const getUserByUsername = async (username) => {
+export async function getUserByUsername (username) {
   return await User.findOne({ username })
 }
 
 // -------------------------------------------------------------
 
-export const getUserById = async (id) => {
+export async function getUserById (id) {
   return await User.findOne({ _id: id })
 }
 
 // -------------------------------------------------------------
 
-export const registerUser = async (username, password) => {
+export async function registerUser (username, password) {
   const newUser = new User({ username, password })
   return (await newUser.save()).toObject()
 }
 
 // -------------------------------------------------------------
 
-export const updateUser = async (user, data) => {
+export async function updateUser (user, data) {
   if (data.username) user.username = data.username
   if (data.password) user.password = data.password
   return await user.save()
@@ -31,7 +31,7 @@ export const updateUser = async (user, data) => {
 
 // -------------------------------------------------------------
 
-export const generateJWT = (user) => {
+export function generateJWT (user) {
   return jwt.sign(
     { id: user._id, username: user.username },
     config.secretKey,

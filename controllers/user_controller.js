@@ -9,7 +9,7 @@ import {
 
 // -------------------------------------------------------------
 
-export const createUser = async (req, res) => {
+export async function createUser (req, res) {
   try {
     const { username, password } = req.body
 
@@ -38,7 +38,7 @@ export const createUser = async (req, res) => {
 
 // -------------------------------------------------------------
 
-export const editUser = async (req, res) => {
+export async function editUser (req, res) {
   try {
     // Assuming `req.user` contains the authenticated user's information
     const userId = req.user.id
@@ -69,7 +69,7 @@ export const editUser = async (req, res) => {
 
 // -------------------------------------------------------------
 
-export const login = async (req, res) => {
+export async function login (req, res) {
   const { username, password } = req.body
 
   // Check if input has required fields
