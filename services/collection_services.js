@@ -29,3 +29,7 @@ export async function uploadCardCopies (data) {
 }
 
 // -------------------------------------------------------------
+
+export default {
+  uploadCardCopies
+}

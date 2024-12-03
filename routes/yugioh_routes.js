@@ -1,10 +1,5 @@
 import express from 'express'
-import {
-  getCards,
-  getCard,
-  getCardsBySet,
-  getCardImages
-} from '../controllers/yugioh_controller.js'
+import yugiohController from '../controllers/yugioh_controller.js'
 import {
   authenticate
 } from '../middlewares/auth_middleware.js'
@@ -12,11 +7,11 @@ import {
 const router = express.Router()
 router.use(authenticate)
 
-router.get('/yugioh_cards', getCards)
-router.get('/yugioh_cards/set/:setName', getCardsBySet)
-router.get('/yugioh_cards/id/:id', getCard)
-router.get('/yugioh_cards/name/:name', getCard)
-router.get('/yugioh_cards/set-code/:setCode', getCard)
-router.get('/yugioh_cards/images/:ids', getCardImages)
+router.get('/yugioh_cards', yugiohController.getCards)
+router.get('/yugioh_cards/set/:setName', yugiohController.getCardsBySet)
+router.get('/yugioh_cards/id/:id', yugiohController.getCard)
+router.get('/yugioh_cards/name/:name', yugiohController.getCard)
+router.get('/yugioh_cards/set-code/:setCode', yugiohController.getCard)
+router.get('/yugioh_cards/images/:ids', yugiohController.getCardImages)
 
 export default router

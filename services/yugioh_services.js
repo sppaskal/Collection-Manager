@@ -90,3 +90,12 @@ export async function fetchCardImagesByIds (ids) {
 
   return imagesObj
 }
+
+// -------------------------------------------------------------
+
+export default {
+  fetchCards,
+  fetchCardsBySet,
+  fetchCard,
+  fetchCardImagesByIds
+}

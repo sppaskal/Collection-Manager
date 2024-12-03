@@ -1,7 +1,5 @@
 import express from 'express'
-import {
-  addCards
-} from '../controllers/collection_controller.js'
+import collectionController from '../controllers/collection_controller.js'
 import {
   authenticate
 } from '../middlewares/auth_middleware.js'
@@ -9,6 +7,6 @@ import {
 const router = express.Router()
 router.use(authenticate)
 
-router.post('/user_collection/add', addCards)
+router.post('/user_collection/add', collectionController.addCards)
 
 export default router

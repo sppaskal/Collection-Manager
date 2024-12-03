@@ -1,15 +1,9 @@
 import logger from '../utils/logger.js'
-import {
-  getUserByUsername,
-  getUserById,
-  registerUser,
-  updateUser,
-  generateJWT
-} from '../services/user_services.js'
+import userService from '../services/user_services.js'
 
 // -------------------------------------------------------------
 
-export async function createUser (req, res) {
+async function createUser (req, res) {
   try {
     const { username, password } = req.body
 
@@ -21,13 +15,13 @@ export async function createUser (req, res) {
     }
 
     // Check if user with provided username already exists
-    if (await getUserByUsername(username)) {
+    if (await userService.getUserByUsername(username)) {
       return res.status(400).json(
         { error: 'Username already exists' }
       )
     }
 
-    const newUser = await registerUser(username, password)
+    const newUser = await userService.registerUser(username, password)
 
     res.status(201).json(newUser)
   } catch (err) {
@@ -38,7 +32,7 @@ export async function createUser (req, res) {
 
 // -------------------------------------------------------------
 
-export async function editUser (req, res) {
+async function editUser (req, res) {
   try {
     // Assuming `req.user` contains the authenticated user's information
     const userId = req.user.id
@@ -50,12 +44,12 @@ export async function editUser (req, res) {
     }
 
     // Check if current user exists
-    const user = await getUserById(userId)
+    const user = await userService.getUserById(userId)
     if (!user) {
       return res.status(404).json({ error: 'User not found' })
     }
 
-    const updatedUser = await updateUser(user, req.body)
+    const updatedUser = await userService.updateUser(user, req.body)
 
     res.status(200).json({
       message: 'User updated successfully',
@@ -69,7 +63,7 @@ export async function editUser (req, res) {
 
 // -------------------------------------------------------------
 
-export async function login (req, res) {
+async function login (req, res) {
   const { username, password } = req.body
 
   // Check if input has required fields
@@ -80,7 +74,7 @@ export async function login (req, res) {
 
   try {
     // Check if username exists
-    const user = await getUserByUsername(username)
+    const user = await userService.getUserByUsername(username)
     if (!user) {
       return res.status(401).json(
         { message: 'Invalid username' }
@@ -95,7 +89,7 @@ export async function login (req, res) {
       )
     }
 
-    const token = generateJWT(user)
+    const token = userService.generateJWT(user)
 
     res.status(200).json({ message: 'Login successful', token })
   } catch (err) {
@@ -105,3 +99,9 @@ export async function login (req, res) {
 }
 
 // -------------------------------------------------------------
+
+export default {
+  createUser,
+  editUser,
+  login
+}

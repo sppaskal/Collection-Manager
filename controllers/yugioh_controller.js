@@ -1,19 +1,14 @@
 import config from '../config/config.js'
 import logger from '../utils/logger.js'
-import {
-  fetchCards,
-  fetchCardsBySet,
-  fetchCard,
-  fetchCardImagesByIds
-} from '../services/yugioh_services.js'
+import yugiohService from '../services/yugioh_services.js'
 import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 
 // -------------------------------------------------------------
 
 /** Get all cards */
-export async function getCards (req, res) {
+async function getCards (req, res) {
   try {
-    const cards = await fetchCards()
+    const cards = await yugiohService.fetchCards()
     res.json(cards)
   } catch (err) {
     logger.error('Error fetching cards:', err)
@@ -24,10 +19,10 @@ export async function getCards (req, res) {
 // -------------------------------------------------------------
 
 /** Get all cards for a specific set */
-export async function getCardsBySet (req, res) {
+async function getCardsBySet (req, res) {
   try {
     const { setName } = req.params
-    const cards = await fetchCardsBySet(setName)
+    const cards = await yugiohService.fetchCardsBySet(setName)
 
     if (cards.length === 0) {
       return res.status(404).json(
@@ -46,16 +41,16 @@ export async function getCardsBySet (req, res) {
 
 /** Get a card by either 'name', 'id', or 'set-code'
  * and include image data if available */
-export async function getCard (req, res) {
+async function getCard (req, res) {
   try {
     const { name, id, setCode } = req.params
-    const card = await fetchCard(name, id, setCode)
+    const card = await yugiohService.fetchCard(name, id, setCode)
 
     if (!card) {
       return res.status(404).json({ error: 'Card not found' })
     }
 
-    const imgObj = await fetchCardImagesByIds(card.id)
+    const imgObj = await yugiohService.fetchCardImagesByIds(card.id)
     const imageBase64 = imgObj[card.id]
 
     if (imageBase64) {
@@ -76,7 +71,7 @@ export async function getCard (req, res) {
 // -------------------------------------------------------------
 
 /** Get card image by id */
-export async function getCardImages (req, res) {
+async function getCardImages (req, res) {
   try {
     // Normalize req.params.id to always be an array
     // Limit processing ids to first 10
@@ -84,7 +79,7 @@ export async function getCardImages (req, res) {
       ? req.params.ids.split(',').slice(0, 10)
       : [req.params.ids]
 
-    const imageBase64 = await fetchCardImagesByIds(ids)
+    const imageBase64 = await yugiohService.fetchCardImagesByIds(ids)
 
     if (!imageBase64) {
       return res.status(404).json({ error: 'Card images not found' })
@@ -95,4 +90,13 @@ export async function getCardImages (req, res) {
     logger.error('Error fetching card image:', err)
     return res.status(500).json({ error: 'Failed to fetch card image' })
   }
+}
+
+// -------------------------------------------------------------
+
+export default {
+  getCards,
+  getCardsBySet,
+  getCard,
+  getCardImages
 }
