@@ -8,5 +8,6 @@ const router = express.Router()
 router.use(authenticate)
 
 router.post('/user_collection/add', collectionController.addCards)
+router.get('/user_collection/:tcg', collectionController.getCollection)
 
 export default router

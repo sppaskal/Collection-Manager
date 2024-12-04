@@ -4,11 +4,13 @@ import { snakeToCamel } from '../utils/formatting_helper.js'
 // -------------------------------------------------------------
 
 /** Add card(s) to user collection */
-export async function uploadCardCopies (userId, requestData) {
+async function uploadCardCopies (userId, requestData) {
   const data = snakeToCamel(requestData) // Normalize to camelCase
 
   const { cardId, tcg, name, quantity, copies, customInfo } = data
-  let entry = await UserCollection.findOne({ userId, cardId })
+  let entry = await UserCollection.findOne(
+    { user_id: userId, card_id: cardId }
+  )
 
   if (entry) {
     entry.copies.push(...copies)
@@ -27,8 +29,19 @@ export async function uploadCardCopies (userId, requestData) {
 
   return (await entry.save()).toObject()
 }
+
+// -------------------------------------------------------------
+
+async function fetchCollection (userId, tcgName) {
+  return await UserCollection.find({
+    user_id: userId,
+    tcg: tcgName
+  })
+}
+
 // -------------------------------------------------------------
 
 export default {
-  uploadCardCopies
+  uploadCardCopies,
+  fetchCollection
 }
