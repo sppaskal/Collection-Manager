@@ -15,12 +15,12 @@ const tcgChoices = [
  * Uploaded datasets for supported TCGs will often have their
  * own unique ids which are maintained to preserve connections
  * to images and other data. This is why 'card_id' is of type
- * Number instead of referencing the internal mongoose ObjectId.
+ * String instead of referencing the internal mongoose ObjectId.
  */
 
 const UserCollection = new mongoose.Schema({
   card_id: {
-    type: Number,
+    type: String,
     required: true
   }, // References custom id in detailed TCG-specific documents
   user_id: {
