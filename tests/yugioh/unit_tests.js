@@ -3,7 +3,7 @@ import { MongoMemoryServer } from 'mongodb-memory-server'
 import { expect } from 'chai'
 import sinon from 'sinon'
 
-import * as service from '../../services/yugioh_services.js'
+import service from '../../services/yugioh_services.js'
 import YugiohCard from '../../models/yugioh/card.js'
 
 // To run: npx mocha tests/yugioh/unit_tests.js

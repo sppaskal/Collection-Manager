@@ -11,14 +11,14 @@ const cardImageChunks = 'yugioh_card_images.chunks'
 // -------------------------------------------------------------
 
 /** Fetch all cards */
-export async function fetchCards () {
+async function fetchCards () {
   return await yugiohCard.find()
 }
 
 // -------------------------------------------------------------
 
 /** Fetch cards by set */
-export async function fetchCardsBySet (setName) {
+async function fetchCardsBySet (setName) {
   // Query to find documents where set_name is an exact match
   // or set_code contains the provided string (case insensitive)
   const query = {
@@ -35,7 +35,7 @@ export async function fetchCardsBySet (setName) {
 // -------------------------------------------------------------
 
 /** Fetch card by name, id, or set code */
-export async function fetchCard (name, id, setCode) {
+async function fetchCard (name, id, setCode) {
   let query = {}
 
   if (name) {
@@ -52,7 +52,7 @@ export async function fetchCard (name, id, setCode) {
 // -------------------------------------------------------------
 
 /** Fetch card images by ids from GridFS */
-export async function fetchCardImagesByIds (ids) {
+async function fetchCardImagesByIds (ids) {
   const db = mongoose.connection.db
   const imageFilesCollection = db.collection(cardImageMetadata)
   const imageChunksCollection = db.collection(cardImageChunks)
