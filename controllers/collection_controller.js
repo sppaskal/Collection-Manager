@@ -19,6 +19,44 @@ async function addCards (req, res) {
 
 // -------------------------------------------------------------
 
+/** Edit user's card
+ * Input fields should contain full data because:
+ * Any field included in the request body will be
+ * replaced, including fields with nested objects.
+*/
+async function editCollectionEntry (req, res) {
+  try {
+    const userId = req.user.id
+    const { entryId } = req.params
+
+    const entry = await collectionService.fetchCollectionEntry(
+      userId,
+      entryId
+    )
+
+    if (!entry) {
+      return res.status(400).json({
+        message: 'No entry found for given id and user'
+      })
+    }
+
+    const updatedEntry = await collectionService.updateEntry(
+      entry,
+      req.body
+    )
+
+    return res.status(200).json({
+      message: 'Collection entry updated successfully',
+      entry: updatedEntry
+    })
+  } catch (err) {
+    logger.error('Error getting user cards for specified tcg:', err)
+    return res.status(500).json({ error: 'Failed to get user cards' })
+  }
+}
+
+// -------------------------------------------------------------
+
 /** Get user's cards for specific TCG */
 async function getCollection (req, res) {
   try {
@@ -34,10 +72,10 @@ async function getCollection (req, res) {
       )
     }
 
-    res.status(200).json(cards)
+    return res.status(200).json(cards)
   } catch (err) {
     logger.error('Error getting user cards for specified tcg:', err)
-    res.status(500).json({ error: 'Failed to get user cards' })
+    return res.status(500).json({ error: 'Failed to get user cards' })
   }
 }
 
@@ -45,5 +83,6 @@ async function getCollection (req, res) {
 
 export default {
   addCards,
-  getCollection
+  getCollection,
+  editCollectionEntry
 }

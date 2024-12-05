@@ -3,7 +3,10 @@ import { snakeToCamel } from '../utils/formatting_helper.js'
 
 // -------------------------------------------------------------
 
-/** Add card(s) to user collection */
+/** Upload card(s) to user collection
+ * NOTE: If an entry for given card already exists -->
+ * Copies in requestData will be added to that entry.
+*/
 async function uploadCardCopies (userId, requestData) {
   const data = snakeToCamel(requestData) // Normalize to camelCase
 
@@ -14,7 +17,6 @@ async function uploadCardCopies (userId, requestData) {
 
   if (entry) {
     entry.copies.push(...copies)
-    entry.quantity += quantity
   } else {
     entry = new UserCollection({
       card_id: cardId,
@@ -32,6 +34,21 @@ async function uploadCardCopies (userId, requestData) {
 
 // -------------------------------------------------------------
 
+// Replaces fields in entry with matching fields in data
+async function updateEntry (entry, data) {
+  for (const [key, value] of Object.entries(data)) {
+    if (key in entry) {
+      entry[key] = value
+    }
+  }
+
+  await entry.validate()
+
+  return (await entry.save()).toObject()
+}
+
+// -------------------------------------------------------------
+
 async function fetchCollection (userId, tcgName) {
   return await UserCollection.find({
     user_id: userId,
@@ -41,7 +58,18 @@ async function fetchCollection (userId, tcgName) {
 
 // -------------------------------------------------------------
 
+async function fetchCollectionEntry (userId, entryId) {
+  return await UserCollection.findOne({
+    user_id: userId,
+    _id: entryId
+  })
+}
+
+// -------------------------------------------------------------
+
 export default {
   uploadCardCopies,
-  fetchCollection
+  updateEntry,
+  fetchCollection,
+  fetchCollectionEntry
 }

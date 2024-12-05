@@ -56,4 +56,14 @@ const UserCollection = new mongoose.Schema({
   } // JSON field for storing custom data points
 })
 
+// -------------------------------------------------------------
+
+UserCollection.pre('save', function (next) {
+  // Ensure quantity matches the length of copies
+  this.quantity = this.copies.length
+  next()
+})
+
+// -------------------------------------------------------------
+
 export default mongoose.model('user_collection', UserCollection)

@@ -6,6 +6,8 @@ const User = new mongoose.Schema({
   password: { type: String, required: true }
 })
 
+// -------------------------------------------------------------
+
 // Pre-save hook to hash the password before saving it
 User.pre('save', async function (next) {
   if (!this.isModified('password')) return next()
@@ -19,9 +21,13 @@ User.pre('save', async function (next) {
   }
 })
 
+// -------------------------------------------------------------
+
 // Method to compare password for authentication
 User.methods.comparePassword = async function (password) {
   return bcrypt.compare(password, this.password)
 }
+
+// -------------------------------------------------------------
 
 export default mongoose.model('user', User)

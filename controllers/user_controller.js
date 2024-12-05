@@ -23,10 +23,10 @@ async function createUser (req, res) {
 
     const newUser = await userService.registerUser(username, password)
 
-    res.status(201).json(newUser)
+    return res.status(201).json(newUser)
   } catch (err) {
     logger.error('Error creating user:', err)
-    res.status(500).json({ error: 'Error creating user' })
+    return res.status(500).json({ error: 'Error creating user' })
   }
 }
 
@@ -51,13 +51,13 @@ async function editUser (req, res) {
 
     const updatedUser = await userService.updateUser(user, req.body)
 
-    res.status(200).json({
+    return res.status(200).json({
       message: 'User updated successfully',
       user: { username: updatedUser.username }
     })
   } catch (err) {
     logger.error('Error updating user:', err)
-    res.status(500).json({ error: 'Error updating user' })
+    return res.status(500).json({ error: 'Error updating user' })
   }
 }
 
@@ -91,10 +91,10 @@ async function login (req, res) {
 
     const token = userService.generateJWT(user)
 
-    res.status(200).json({ message: 'Login successful', token })
+    return res.status(200).json({ message: 'Login successful', token })
   } catch (err) {
     logger.error('Error authenticating user:', err)
-    res.status(500).json({ error: 'Error authenticating user' })
+    return res.status(500).json({ error: 'Error authenticating user' })
   }
 }
 

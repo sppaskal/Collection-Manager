@@ -9,10 +9,10 @@ import { renderYugiohCardToHtml } from '../utils/html_renderer.js'
 async function getCards (req, res) {
   try {
     const cards = await yugiohService.fetchCards()
-    res.json(cards)
+    return res.json(cards)
   } catch (err) {
     logger.error('Error fetching cards:', err)
-    res.status(500).json({ error: 'Failed to fetch cards' })
+    return res.status(500).json({ error: 'Failed to fetch cards' })
   }
 }
 
@@ -30,10 +30,10 @@ async function getCardsBySet (req, res) {
       )
     }
 
-    res.json(cards)
+    return res.json(cards)
   } catch (err) {
     logger.error('Error fetching cards:', err)
-    res.status(500).json({ error: 'Failed to fetch cards' })
+    return res.status(500).json({ error: 'Failed to fetch cards' })
   }
 }
 
@@ -58,13 +58,13 @@ async function getCard (req, res) {
     }
 
     if (config.renderTestMode) {
-      res.send(renderYugiohCardToHtml(card))
+      return res.send(renderYugiohCardToHtml(card))
     } else {
-      res.json(card)
+      return res.json(card)
     }
   } catch (err) {
     logger.error('Error fetching card:', err)
-    res.status(500).json({ error: 'Failed to fetch card' })
+    return res.status(500).json({ error: 'Failed to fetch card' })
   }
 }
 
