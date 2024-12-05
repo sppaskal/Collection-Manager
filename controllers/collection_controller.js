@@ -50,8 +50,8 @@ async function editCollectionEntry (req, res) {
       entry: updatedEntry
     })
   } catch (err) {
-    logger.error('Error getting user cards for specified tcg:', err)
-    return res.status(500).json({ error: 'Failed to get user cards' })
+    logger.error('Error updating user collection entry:', err)
+    return res.status(500).json({ error: 'Failed to update user collection entry' })
   }
 }
 
