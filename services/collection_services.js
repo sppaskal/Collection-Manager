@@ -1,5 +1,6 @@
 import UserCollection from '../models/collection/user_collection.js'
 import { snakeToCamel } from '../utils/formatting_helper.js'
+import { caseInsensFullMatch } from '../utils/query_helper.js'
 
 // -------------------------------------------------------------
 
@@ -58,7 +59,7 @@ async function fetchCollection (userId, tcgName) {
 
 // -------------------------------------------------------------
 
-async function fetchCollectionEntry (userId, entryId) {
+async function fetchEntryById (userId, entryId) {
   return await UserCollection.findOne({
     user_id: userId,
     _id: entryId
@@ -67,9 +68,26 @@ async function fetchCollectionEntry (userId, entryId) {
 
 // -------------------------------------------------------------
 
+async function fetchEntry (name, id, setCode) {
+  let query = {}
+
+  if (name) {
+    query = caseInsensFullMatch('name', name)
+  } else if (id) {
+    query = { card_id: String(id) }
+  } else if (setCode) {
+    query = caseInsensFullMatch('copies.set_code', setCode)
+  }
+
+  return await UserCollection.findOne(query).lean()
+}
+
+// -------------------------------------------------------------
+
 export default {
   uploadCardCopies,
   updateEntry,
   fetchCollection,
-  fetchCollectionEntry
+  fetchEntryById,
+  fetchEntry
 }

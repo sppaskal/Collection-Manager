@@ -29,7 +29,7 @@ async function editCollectionEntry (req, res) {
     const userId = req.user.id
     const { entryId } = req.params
 
-    const entry = await collectionService.fetchCollectionEntry(
+    const entry = await collectionService.fetchEntryById(
       userId,
       entryId
     )
@@ -81,8 +81,31 @@ async function getCollection (req, res) {
 
 // -------------------------------------------------------------
 
+async function getCollectionEntry (req, res) {
+  try {
+    const { name, id, setCode } = req.params
+    const entry = await collectionService.fetchEntry(
+      name,
+      id,
+      setCode
+    )
+
+    if (!entry) {
+      return res.status(404).json({ error: 'Card entry not found' })
+    }
+
+    return res.status(200).json(entry)
+  } catch (err) {
+    logger.error('Error getting cards for specific entry:', err)
+    return res.status(500).json({ error: 'Failed to get entry' })
+  }
+}
+
+// -------------------------------------------------------------
+
 export default {
   addCards,
+  editCollectionEntry,
   getCollection,
-  editCollectionEntry
+  getCollectionEntry
 }
