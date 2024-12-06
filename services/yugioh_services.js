@@ -1,5 +1,5 @@
 import mongoose from 'mongoose'
-import yugiohCard from '../models/yugioh/card.js'
+import YugiohCard from '../models/yugioh/card.js'
 import {
   caseInsensFullMatch,
   caseInsensPartMatch
@@ -12,7 +12,7 @@ const cardImageChunks = 'yugioh_card_images.chunks'
 
 /** Fetch all cards */
 async function fetchCards () {
-  return await yugiohCard.find()
+  return await YugiohCard.find()
 }
 
 // -------------------------------------------------------------
@@ -29,7 +29,7 @@ async function fetchCardsBySet (setName) {
   }
 
   // Fetch all matching cards
-  return await yugiohCard.find(query)
+  return await YugiohCard.find(query)
 }
 
 // -------------------------------------------------------------
@@ -46,7 +46,14 @@ async function fetchCard (name, id, setCode) {
     query = caseInsensFullMatch('card_sets.set_code', setCode)
   }
 
-  return await yugiohCard.findOne(query).lean()
+  return await YugiohCard.findOne(query).lean()
+}
+
+// -------------------------------------------------------------
+
+/** Fetch cards by their ids */
+async function fetchCardsByIds (ids) {
+  return await YugiohCard.find({ id: { $in: ids } })
 }
 
 // -------------------------------------------------------------
@@ -54,8 +61,8 @@ async function fetchCard (name, id, setCode) {
 /** Fetch card images by ids from GridFS */
 async function fetchCardImagesByIds (ids) {
   const db = mongoose.connection.db
-  const imageFilesCollection = db.collection(cardImageMetadata)
-  const imageChunksCollection = db.collection(cardImageChunks)
+  const ImageFilesCollection = db.collection(cardImageMetadata)
+  const ImageChunksCollection = db.collection(cardImageChunks)
 
   // Ensure ids is always an array
   ids = Array.isArray(ids) ? ids : [ids]
@@ -64,11 +71,11 @@ async function fetchCardImagesByIds (ids) {
 
   for (const id of ids) {
     let imageData = 'N/A' // Assign if image file not found
-    const imageFile = await imageFilesCollection.findOne({ _id: String(id) })
+    const imageFile = await ImageFilesCollection.findOne({ _id: String(id) })
 
     if (imageFile) {
       // Retrieve image data from GridFS chunks
-      const downloadStream = imageChunksCollection.find(
+      const downloadStream = ImageChunksCollection.find(
         { files_id: imageFile._id }
       ).sort({ n: 1 })
 
@@ -97,5 +104,6 @@ export default {
   fetchCards,
   fetchCardsBySet,
   fetchCard,
+  fetchCardsByIds,
   fetchCardImagesByIds
 }

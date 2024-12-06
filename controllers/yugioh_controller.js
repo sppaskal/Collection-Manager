@@ -70,6 +70,29 @@ async function getCard (req, res) {
 
 // -------------------------------------------------------------
 
+/** Get cards by their ids */
+async function getCardsByIds (req, res) {
+  try {
+    const { ids } = req.body
+    const maxIds = 50 // Max ids to respond to
+    if (!Array.isArray(ids) || ids.length === 0) {
+      return res.status(400).json(
+        { error: 'Invalid or missing "ids" field' }
+      )
+    }
+
+    const cards = await yugiohService.fetchCardsByIds(
+      ids.slice(0, maxIds)
+    )
+    return res.status(200).json(cards)
+  } catch (err) {
+    logger.error('Error fetching cards:', err)
+    return res.status(500).json({ error: 'Failed to fetch cards' })
+  }
+}
+
+// -------------------------------------------------------------
+
 /** Get card image by id */
 async function getCardImages (req, res) {
   try {
@@ -98,5 +121,6 @@ export default {
   getCards,
   getCardsBySet,
   getCard,
+  getCardsByIds,
   getCardImages
 }
